@@ -3,12 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Todo } from '../models/todo.model';
 import { TodoService } from '../services/todo.service';
+import { HeaderComponent } from '../../../shared/components/header/header.component';
 
 @Component({
   selector: 'app-todo-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, HeaderComponent],
   template: `
+    <app-header></app-header>
     <div class="max-w-4xl mx-auto">
       <h2 class="text-3xl font-bold mb-6">Mes Todos</h2>
       <!-- Loading state -->
@@ -172,6 +174,7 @@ export class TodoListComponent implements OnInit {
     try {
       this.loading.set(true);
       const todos = await this.todoService.getAllTodos();
+      console.log('Todos récupérés dans le composant:', todos); // Ajout du log
       this.todos.set(todos);
     } catch (error) {
       console.error('Erreur lors du chargement des todos:', error);

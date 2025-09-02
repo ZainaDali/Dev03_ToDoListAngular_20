@@ -14,8 +14,8 @@ export const routes: Routes = [
     path: 'todos',
     loadChildren: () => import('./features/todos/todos.routes').then(m => m.TODOS_ROUTES)
   },
-  {
-    path: 'admin',
-    loadChildren: () => import('./features/admin/admin.routes').then(m => m.ADMIN_ROUTES)
-  }
+  // {
+  //   path: 'admin',
+  //   loadChildren: () => import('./features/admin/admin.routes').then(m => m.ADMIN_ROUTES)
+  // }
 ];
