@@ -32,11 +32,27 @@ export class AuthService {
   };
 
   constructor() {
+    this.loadUsersFromStorage();
     // Vérifier s'il y a un utilisateur en session
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
       this.currentUser.set(JSON.parse(savedUser));
     }
+  }
+
+  saveUsersToStorage() {
+    localStorage.setItem('users', JSON.stringify(this.users));
+    localStorage.setItem('passwords', JSON.stringify(this.passwords));
+  }
+
+  loadUsersFromStorage() {
+    const users = localStorage.getItem('users');
+    const passwords = localStorage.getItem('passwords');
+    if (users && passwords) {
+      this.users = JSON.parse(users);
+      this.passwords = JSON.parse(passwords);
+    }
+    // sinon, garder les données par défaut
   }
 
   login(credentials: LoginRequest): Observable<User> {
@@ -57,7 +73,6 @@ export class AuthService {
     if (existingUser) {
       return throwError(() => new Error('Cet email est déjà utilisé'));
     }
-
     // Créer un nouvel utilisateur
     const newUser: User = {
       id: this.users.length + 1,
@@ -65,11 +80,10 @@ export class AuthService {
       email: userData.email,
       role: 'user'
     };
-
     // Ajouter aux mock data
     this.users.push(newUser);
     this.passwords[userData.email] = userData.password;
-
+    this.saveUsersToStorage();
     // Simuler un délai réseau
     return of(newUser).pipe(delay(500));
   }
@@ -90,8 +104,21 @@ export class AuthService {
   deleteUser(userId: number): Observable<void> {
     const index = this.users.findIndex(u => u.id === userId);
     if (index !== -1) {
+      const deletedEmail = this.users[index].email;
       this.users.splice(index, 1);
+      delete this.passwords[deletedEmail];
+      this.saveUsersToStorage();
       return of(void 0).pipe(delay(300));
+    }
+    return throwError(() => new Error('Utilisateur non trouvé'));
+  }
+
+  updateUserRole(userId: number, newRole: 'admin' | 'user'): Observable<User> {
+    const user = this.users.find(u => u.id === userId);
+    if (user) {
+      user.role = newRole;
+      this.saveUsersToStorage();
+      return of(user).pipe(delay(300));
     }
     return throwError(() => new Error('Utilisateur non trouvé'));
   }

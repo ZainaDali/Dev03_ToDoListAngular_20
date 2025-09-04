@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from '../../../features/auth/services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -21,8 +23,11 @@ import { Component } from '@angular/core';
   styles: []
 })
 export class HeaderComponent {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
   logout() {
-    // TODO: Implémenter la déconnexion
-    console.log('Logout clicked');
+    this.authService.logout();
+    this.router.navigate(['/auth/login']);
   }
 }
