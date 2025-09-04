@@ -1,11 +1,11 @@
-import { Injectable, signal } from '@angular/core';
+import { computed, Injectable, signal } from '@angular/core';
 import { Todo, CreateTodoRequest } from '../models/todo.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TodoService {
-  private todos = signal<Todo[]>([
+  public todos = signal<Todo[]>([
     {
       id: 1,
       title: 'Apprendre Angular',
@@ -126,4 +126,30 @@ export class TodoService {
   getTodosByPriority(priority: Todo['priority']): Todo[] {
     return this.todos().filter(todo => todo.priority === priority);
   }
+
+  public completedTodos = computed(() => 
+    this.todos().filter(todo => todo.status === 'done')
+  );
+  public pendingTodos = computed(() => 
+    this.todos().filter(todo => todo.status === 'todo')
+  );
+
+  public inProgressTodos = computed(() => 
+    this.todos().filter(todo => todo.status === 'in-progress')
+  );
+  
+  public highPriorityTodos = computed(() => 
+    this.todos().filter(todo => todo.priority === 'high')
+  );
+  
+  public todoStats = computed(() => ({
+    total: this.todos().length,
+    completed: this.completedTodos().length,
+    inProgress: this.inProgressTodos().length,
+    pending: this.pendingTodos().length,
+    highPriority: this.highPriorityTodos().length,
+    completionRate: this.todos().length > 0 
+      ? (this.completedTodos().length / this.todos().length) * 100 
+      : 0
+  }));
 }

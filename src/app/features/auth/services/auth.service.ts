@@ -97,13 +97,22 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    const user = this.currentUser();
-    return user ? `mock-token-${user.id}` : null;
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedUser) {
+      const parsed = JSON.parse(savedUser);
+      return parsed.token || null;
+    }
+    return null;
   }
 
   // Méthode pour définir l'utilisateur connecté (utilisée après login)
   setCurrentUser(user: User): void {
-    this.currentUser.set(user);
-    localStorage.setItem('currentUser', JSON.stringify(user));
+    const userWithToken = {
+      ...user,
+      token: `mock-token-${user.id}` // ajouter un token factice
+    };
+
+    this.currentUser.set(userWithToken);
+    localStorage.setItem('currentUser', JSON.stringify(userWithToken));
   }
 }

@@ -16,3 +16,15 @@ export interface RegisterRequest {
   password: string;
   confirmPassword: string;
 }
+
+export interface Todo {
+  id: number;
+  title: string;
+  description?: string;
+  status: 'todo' | 'in-progress' | 'done';
+  priority: 'low' | 'medium' | 'high';
+  createdBy: number;
+  assignedTo?: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
